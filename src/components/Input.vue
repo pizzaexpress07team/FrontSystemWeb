@@ -8,8 +8,18 @@
              class="input-control input-fill"
              :placeholder="holder"
              :type="security ? 'password' : 'text'"
-             v-model="content">
+             v-model="content"
+             ref="content"
+             autocomplete>
       <label class="input-label">{{holder}}</label>
+      <div class="captcha-wrapper"
+           v-if="captchaPhone">
+        <el-button type="text"
+                   style="height:20px;padding:0;"
+                   @click="getCaptcha"
+                   :disabled="waitingCaptcha"
+        >{{captcha}}</el-button>
+      </div>
     </div>
     <div class="error-wrapper"
          v-if="errorMsg"
@@ -25,14 +35,18 @@ export default {
     icon: String, // icon的类
     security: Boolean, // 是否密文显示
     errorMsg: String, // 错误提示
+    captchaPhone: String, // 验证手机号
   },
   data() {
     return {
       content: '',
+      focusStatus: false, // 用于自动聚焦
+      captcha: '获取验证码', // 验证码文案
+      waitingCaptcha: false, // 重新发送禁止标识
     };
   },
   watch: {
-    showErrorMsg(curVal) {
+    errorMsg(curVal) {
       if (curVal) {
         this.errorMsg = curVal;
       }
@@ -41,19 +55,50 @@ export default {
   methods: {
     /**
      * 发送input内容给父级元素
+     * @param {string} something 需要报告给父组件的其他信息
      */
-    inputChange() {
+    inputChange(something) {
       const input = {
         label: this.holder,
         content: this.content,
+        otherInfo: something,
       };
       this.$emit('listenInputChange', input);
+    },
+    /**
+     * 获取验证码
+     */
+    getCaptcha() {
+      // 验证手机号
+      if (!this.captchaPhone || this.captchaPhone === '0') {
+        this.inputChange('请先输入手机号');
+        return;
+        // eslint-disable-next-line
+      } else {
+        this.inputChange(' ');
+      }
+
+      let waitTime = 60;
+      const timeInterval = setInterval(() => {
+        waitTime -= 1;
+        if (waitTime > 0) {
+          this.waitingCaptcha = true;
+          this.captcha = `重新发送 ${waitTime}s`;
+        } else {
+          waitTime = 60;
+          this.captcha = '获取验证码';
+          this.waitingCaptcha = false;
+          clearInterval(timeInterval);
+        }
+      }, 1000);
+      this.$refs.content.focus();
+      // TODO: 验证码发送
     },
   },
 };
 </script>
 
-<style scoped>
+<style lang="less">
   /*输入框样式*/
   .input-fill-x {
     width: -moz-fit-content;
@@ -64,11 +109,21 @@ export default {
     border-radius: 16px 16px 0 0;
     padding: 0 5px;
     border-bottom: 1px solid #d0d0d5;
+    .captcha-wrapper {
+      position: absolute;
+      bottom: 0;
+      top: 10px;
+      right: 0;
+      width: 80px;
+      height: 20px;
+      font-size: 14px;
+      margin: auto;
+    }
   }
   .input-fill-x::after {
     content: '';
     position: absolute;
-    border-bottom: 2px solid #a3161e;
+    border-bottom: 2px solid #E6A23C;
     left: 0; right: 0; bottom: -1px;
     transform: scaleX(0);
     transition: transform .25s;
