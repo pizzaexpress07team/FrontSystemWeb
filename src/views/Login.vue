@@ -12,7 +12,7 @@
             <el-tab-pane label="帐号密码登录" name="first">
               <el-row type="flex"
                       align="middle"
-                      justify="center"
+                      justify="space-between"
                       class="left-wrapper-inner"
               >
                 <el-col :span="12">
@@ -53,7 +53,7 @@
             <el-tab-pane label="手机号登录" name="second">
               <el-row type="flex"
                       align="middle"
-                      justify="center"
+                      justify="space-between"
                       class="left-wrapper-inner"
               >
                 <el-col :span="12">
@@ -210,7 +210,6 @@ export default {
         this.errorPhoneMsg[1] = '请输入验证码';
         rejectSubmit = true;
       }
-      console.log(this.errorPhoneMsg);
       return rejectSubmit;
     },
     /**
@@ -264,12 +263,12 @@ export default {
   box-sizing: border-box;
 }
 .left-wrapper-inner {
-  padding: 20px 0;
+  padding: 40px 0 20px;
   flex-direction: column;
   height: 100%;
 }
 .login-wrapper {
-  margin-bottom: 40%;
+  /*margin-bottom: 40%;*/
 }
 .image-wrapper {
   width: 100%;
