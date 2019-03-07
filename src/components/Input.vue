@@ -12,6 +12,9 @@
              ref="content"
              autocomplete>
       <label class="input-label">{{holder}}</label>
+      <div class="error-wrapper"
+           v-if="errorMsg"
+      >{{errorMsg}}</div>
       <div class="captcha-wrapper"
            v-if="captchaPhone">
         <el-button type="text"
@@ -21,9 +24,25 @@
         >{{captcha}}</el-button>
       </div>
     </div>
-    <div class="error-wrapper"
-         v-if="errorMsg"
-    >{{errorMsg}}</div>
+    <div v-if="needRepeatCheck"
+         style="margin-top: 18px;">
+      <div class="input-fill-x">
+        <i v-if="icon"
+           class="input-icon"
+           :class="icon"></i>
+        <input @change="checkChange"
+               class="input-control input-fill"
+               :placeholder='holder'
+               :type="security ? 'password' : 'text'"
+               v-model="checkContent"
+               ref="content"
+               autocomplete>
+        <label class="input-label">确认{{holder}}</label>
+        <div class="error-wrapper"
+             v-if="errorMsg"
+        >{{errorMsg}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -36,6 +55,7 @@ export default {
     security: Boolean, // 是否密文显示
     errorMsg: String, // 错误提示
     captchaPhone: String, // 验证手机号
+    needRepeatCheck: Boolean, // 需要确认验证
   },
   data() {
     return {
@@ -43,6 +63,7 @@ export default {
       focusStatus: false, // 用于自动聚焦
       captcha: '获取验证码', // 验证码文案
       waitingCaptcha: false, // 重新发送禁止标识
+      checkContent: '', // 确认xxx的内容
     };
   },
   watch: {
@@ -60,10 +81,20 @@ export default {
     inputChange(something) {
       const input = {
         label: this.holder,
-        content: this.content,
+        content: this.content.trim(),
         otherInfo: something,
       };
       this.$emit('listenInputChange', input);
+    },
+    /**
+     * 密码验证
+     */
+    checkChange() {
+      if (this.checkContent.trim() !== this.content.trim()) {
+        this.inputChange('密码输入不一致');
+      } else {
+        this.inputChange(' ');
+      }
     },
     /**
      * 获取验证码
@@ -72,6 +103,10 @@ export default {
       // 验证手机号
       if (!this.captchaPhone || this.captchaPhone === '0') {
         this.inputChange('请先输入手机号');
+        return;
+        // eslint-disable-next-line
+      } else if (!(/^1[34578]\d{9}$/.test(this.captchaPhone))) {
+        this.inputChange('请输入正确的手机号');
         return;
         // eslint-disable-next-line
       } else {
@@ -104,7 +139,7 @@ export default {
     width: -moz-fit-content;
     width: fit-content;
     position: relative;
-    margin-bottom: 5px;
+    margin: 0 auto 5px;
     background: #ffffff;
     border-radius: 16px 16px 0 0;
     padding: 0 5px;
@@ -133,12 +168,12 @@ export default {
   }
   .input-control {
     margin: 0;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
     outline: none;
   }
   .input-fill {
-    padding: 20px 16px 6px;
+    padding: 20px 12px 6px;
     border: 1px solid transparent;
     background: #ffffff;
     border-radius: 16px 16px 0 0;
@@ -152,7 +187,7 @@ export default {
   }
   .input-label {
     position: absolute;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
     left: 40px; top: 19px;
     color: #a2a9b6;
@@ -164,7 +199,7 @@ export default {
   /* 填充样式下label定位 */
   .input-fill:not(:placeholder-shown) ~ .input-label,
   .input-fill:focus ~ .input-label {
-    transform: scale(0.75) translateY(-19px) translateX(10px);
+    transform: scale(0.75) translateY(-19px) translateX(8px);
   }
   /* 线框交互下有个白色背景 */
   .input-outline ~ .input-label,
@@ -176,9 +211,9 @@ export default {
     margin: 0 5px 0 10px;
   }
   .error-wrapper {
+    position: absolute;
     text-align: left;
     font-size: 12px;
-    margin-bottom: 5px;
     color: #F56C6C;
   }
 </style>
