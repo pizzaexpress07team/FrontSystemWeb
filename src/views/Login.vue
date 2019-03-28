@@ -314,6 +314,9 @@ export default {
       // TODO:后台数据提交
       setTimeout(() => {
         this.submitLoading = false;
+        this.$router.push({
+          path: '/',
+        });
       }, 1300);
     },
     /**
@@ -373,6 +376,9 @@ export default {
       // TODO:后台数据提交
       setTimeout(() => {
         this.submitPhoneLoading = false;
+        this.$router.push({
+          path: '/',
+        });
       }, 1300);
     },
     /**
