@@ -3,12 +3,12 @@
     <el-col :span="2" :offset="4">
       <div class="logo-wrapper">PDQ</div>
     </el-col>
-    <el-col :span="3" class="left-nav">
+    <el-col :span="4" class="left-nav">
       <router-link to="/">首页</router-link>
       <router-link to="/menu">菜单</router-link>
       <router-link to="/about">关于我们</router-link>
     </el-col>
-    <el-col :span="2" :offset="9">
+    <el-col :span="2" :offset="8">
       <router-link to="/login">登录</router-link>
       <el-dropdown>
       <span class="el-dropdown-link">

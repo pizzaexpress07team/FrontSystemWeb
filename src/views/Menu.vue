@@ -1,7 +1,6 @@
 <template>
   <div class="menu">
     <NavMenu />
-    <el-button @click="show = !show">Click Me</el-button>
     <el-row class="bag-menu-container">
       <el-col :span="16" :offset="4">
         <el-row class="bag-menu-inner">
@@ -11,7 +10,7 @@
                 <transition name="el-fade-in-linear">
                   <div v-show="firstPanelShow" class="transition-box">
                     <el-card class="item-wrapper" shadow="hover">
-                      sss
+                      至尊牛肉披萨
                       <div class="item-arrow">
                         <i class="el-icon-caret-right"></i>
                       </div>
