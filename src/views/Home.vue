@@ -1,55 +1,45 @@
 <template>
   <div class="home">
     <NavMenu />
-    <el-row class="pic-wrapper">
-      <el-col :span="16" :offset="4">
-        <el-carousel :interval="6000" type="card" height="260px">
-          <el-carousel-item v-for="item in 6" :key="item">
-            <h3>{{ item }}</h3>
-          </el-carousel-item>
-        </el-carousel>
+    <el-row class="banner-container">
+      <el-col :span="24" class="banner-wrapper">
+        <div class="banner-word">PDQ</div>
+        <div class="banner-img-wrapper">
+          <img class="banner-img" src="http://d2f7o8gw4q8bay.cloudfront.net/pizza.png"  alt="pizza"/>
+        </div>
+        <div class="banner-word">
+          <span class="typing">EXPRESS</span>
+          <el-tag class="word-tag">30分钟必达的美味</el-tag>
+        </div>
       </el-col>
     </el-row>
-    <el-row class="step-wrapper">
+    <el-row class="step-toast">
       <el-col :span="16" :offset="4">
-        <el-row type="flex" justify="center">
-          <el-col :span="2">
-            <div class="pizza-pic">
-              <img style="transform: rotate(-135deg);" src="../assets/logo.png"  alt="pizza"/>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div class="step-toast">享受美味的Pizza，你只需要以下三步</div>
-          </el-col>
-          <el-col :span="2">
-            <div class="pizza-pic">
-              <img style="transform: rotate(45deg);" src="../assets/logo.png"  alt="pizza"/>
-            </div>
-          </el-col>
-        </el-row>
+        <el-tag class="tips-tag">享受美味的披萨，你只需要以下三步</el-tag>
       </el-col>
       <el-col :span="16" :offset="4">
-        <el-steps :active="this.activeStep" align-center>
-          <el-step
-            title="第一步"
-            icon="el-icon-goods"
-            description="从我们的网页或APP选购你心仪的餐品"
-          ></el-step>
-          <el-step
-            title="第二步"
-            icon="el-icon-success"
-            description="确认订单，支付"></el-step>
-          <el-step
-            title="第三步"
-            icon="el-icon-loading"
-            description="等待我们专业外送员的到来"></el-step>
-        </el-steps>
+        <div class="step-wrapper">
+          <div class="step-svg">
+            <svg-icon iconClass="add-to-cart" className="step-show"></svg-icon>
+            <div class="step-word">在线选购心仪餐品</div>
+          </div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-wrapper">
+          <svg-icon iconClass="online-payment" className="step-show"></svg-icon>
+          <div class="step-word">确认您的订单并支付</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-wrapper">
+          <svg-icon iconClass="scooter" className="step-show"></svg-icon>
+          <div class="step-word">等待我们送货上门</div>
+        </div>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="16" :offset="4">
         <div class="button-wrapper">
-          <el-button type="warning" @click="jumpToMenu">
+          <el-button @click="jumpToMenu">
             开始选购
           </el-button>
         </div>
@@ -69,16 +59,12 @@ export default {
   },
   data() {
     return {
+      svgName: 'add-to-cart',
       activeStep: 0,
     };
   },
   mounted() {
-    const stepInterval = setInterval(() => {
-      this.activeStep += 1;
-      if (this.activeStep === 3) {
-        clearInterval(stepInterval);
-      }
-    }, 1000);
+
   },
   methods: {
     jumpToMenu() {
@@ -91,57 +77,127 @@ export default {
 </script>
 
 <style scoped lang="less">
-  .pic-wrapper {
-    padding-top: 20px;
-    background: linear-gradient(#E6A23CAD, #ffffff);
-  }
-  .step-wrapper {
-    animation: slowshow;
-    animation-duration: 1.3s;
-    margin-top: 40px;
-    .step-toast {
-      line-height: 50px;
-      margin-bottom: 40px;
-      font-weight: bold;
-    }
-    .pizza-pic {
-      img {
-        width: 50px;
-        height: 50px;
-      }
-    }
-  }
-  .button-wrapper {
-    margin-top: 40px;
-  }
-  @keyframes slowshow {
+  @keyframes slowShow {
     0% {
+      opacity: 0;
+    }
+    50% {
       opacity: 0;
     }
     100% {
       opacity: 1;
     }
   }
-  .el-carousel__item h3 {
-    color: #475669;
-    font-size: 14px;
-    opacity: 0.75;
-    line-height: 200px;
-    margin: 0;
+  .banner-container {
+    background: #FDD14B;
+    border-radius: 0 0 24px 24px;
+    padding-bottom: 60px;
+    .banner-word {
+      display: inline-block;
+      font-family: "Fira Sans", sans-serif;
+      font-size: 68px;
+      line-height: 200px;
+      height: 200px;
+      letter-spacing: 2px;
+      vertical-align: top;
+      position: relative;
+      .typing {
+        width: 4.2em;
+        display: inline-block;
+        animation: typing 1s steps(7, end);
+        overflow: hidden;
+      }
+      /* 打印效果 */
+      @keyframes typing {
+        from { width: 0; }
+        to { width: 4.2em; }
+      }
+      .word-tag {
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+        right: 0;
+        font-size: 18px;
+        color: #000000;
+        text-align: center;
+        background: #FEF0F0;
+        line-height: 32px;
+        height: 42px;
+        border: 1px solid #F56C6C;
+        border-radius: 8px;
+        padding: 5px 0;
+        animation: slowShow;
+        animation-duration: 4s;
+      }
+    }
+    .banner-img-wrapper {
+      display: inline-block;
+      width: 11.5em;
+      height: 11.5em;
+      padding: 0 70px 0 80px;
+    }
+    .banner-img {
+      display: inline-block;
+      width: 11.5em;
+      height: 11.5em;
+      transform: rotate(-45deg);
+    }
   }
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
+  .step-toast {
+    animation: slowShow;
+    animation-duration: 1.3s;
+    margin-top: 30px;
+    font-family: "PingFang SC", sans-serif;
+    .tips-tag {
+      height: 36px;
+      padding: 5px 80px;
+      font-size: 16px;
+      color: #000000;
+      text-align: center;
+      border: 1px solid #f56c6c;
+      background: #FEF0F0;
+      line-height: 26px;
+      border-radius: 8px;
+    }
   }
-  .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
+  .step-wrapper {
+    display: inline-block;
+    width: 165px;
+    height: 170px;
+    text-align: center;
+    padding:30px 0 20px;
+    box-sizing: border-box;
+    position: relative;
+    .step-show {
+      width: 64px;
+      height: 64px;
+    }
+    .step-word {
+      font-size: 16px;
+      color: #000000;
+      text-align: center;
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+    }
+  }
+  .step-line {
+    display: inline-block;
+    border: 1px dashed #FDD14B;
+    width: 10em;
+    height: 0;
+    position:relative;
+    top: -22px
+  }
+  .button-wrapper {
+    height: 0;
+    width: 100%;
+    position: relative;
+    border: 1px dashed #FDD14B;
   }
 </style>
 <style lang="less">
   // 样式覆写
-  .step-wrapper{
-    .el-step__title.is-finish,
-    .el-step__description.is-finish {
-      color: #333333!important;
-    }
-  }
+
 </style>

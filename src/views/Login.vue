@@ -107,7 +107,7 @@
             </el-col>
             <el-col :span="6">
               <div class="image-wrapper">
-                <img class="image-content" src="@/assets/images/personalCenter/login.jpg"/>
+                <img class="image-content" src="http://d2f7o8gw4q8bay.cloudfront.net/login.jpg" alt="login-image"/>
               </div>
             </el-col>
           </el-row>
@@ -132,13 +132,13 @@
                   <el-form class="login-wrapper"
                            @keyup.enter.native="enterToLogin"
                   >
-                    <input-fill holder="帐号"
+                    <input-fill holder="请输入账号名称"
                                 icon="icon-user"
                                 @listenInputChange="registerChange"
                                 :errorMsg="errorRegisterMsg[2]"
                                 style="margin-bottom: 18px;"
                     ></input-fill>
-                    <input-fill holder="密码"
+                    <input-fill holder="请输入密码"
                                 icon="icon-key"
                                 @listenInputChange="registerChange"
                                 :errorMsg="errorRegisterMsg[3]"
@@ -147,20 +147,20 @@
                                 security
                                 needRepeatCheck
                     ></input-fill>
-                    <input-fill holder="手机号"
-                                icon="icon-phone"
-                                @listenInputChange="registerChange"
-                                :errorMsg="errorRegisterMsg[0]"
-                                style="margin-bottom: 18px;"
-                    ></input-fill>
-                    <input-fill holder="验证码"
-                                icon="icon-ticket"
-                                @listenInputChange="registerChange"
-                                :errorMsg="errorRegisterMsg[1]"
-                                @keydown.enter="enterToRegister"
-                                :captchaPhone="registerInfo.phone"
-                                security
-                    ></input-fill>
+<!--                    <input-fill holder="手机号"-->
+<!--                                icon="icon-phone"-->
+<!--                                @listenInputChange="registerChange"-->
+<!--                                :errorMsg="errorRegisterMsg[0]"-->
+<!--                                style="margin-bottom: 18px;"-->
+<!--                    ></input-fill>-->
+<!--                    <input-fill holder="验证码"-->
+<!--                                icon="icon-ticket"-->
+<!--                                @listenInputChange="registerChange"-->
+<!--                                :errorMsg="errorRegisterMsg[1]"-->
+<!--                                @keydown.enter="enterToRegister"-->
+<!--                                :captchaPhone="registerInfo.phone"-->
+<!--                                security-->
+<!--                    ></input-fill>-->
                   </el-form>
                 </el-col>
                 <el-col>
@@ -183,7 +183,7 @@
             </el-col>
             <el-col :span="6">
               <div class="image-wrapper">
-                <img class="image-content" src="@/assets/images/personalCenter/register.jpg"/>
+                <img class="image-content" src="http://d2f7o8gw4q8bay.cloudfront.net/register.jpg"  alt="register-image"/>
               </div>
             </el-col>
           </el-row>
@@ -232,6 +232,13 @@ export default {
         captcha: '',
       },
     };
+  },
+  mounted() {
+    const isRegister = this.$route.query.register;
+    if (isRegister === true) {
+      this.showLogin = false;
+      this.showRegister = true;
+    }
   },
   methods: {
     /**
@@ -304,20 +311,33 @@ export default {
     /**
      * 帐号密码表单提交
      */
-    loginSubmit() {
+    async loginSubmit() {
       this.submitLoading = true;
       const rejectSubmit = this.checkInput(this.loginInfo, 'errorMsg');
       if (rejectSubmit) {
         this.submitLoading = false;
         return;
       }
-      // TODO:后台数据提交
-      setTimeout(() => {
+      // 后台数据提交
+      try {
+        let result = await this.getRequest(`/user/login?username=${this.loginInfo.username}&password=${this.loginInfo.password}`);
         this.submitLoading = false;
-        this.$router.push({
-          path: '/',
-        });
-      }, 1300);
+        result = result.data;
+        if (result.errorCode !== 0) {
+          this.$message({
+            message: result.errorMsg,
+            type: 'error',
+          });
+        } else {
+          sessionStorage.setItem('user', JSON.stringify(result.username));
+          this.$router.push({
+            path: '/',
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        this.$message.error('登录失败，请稍后再试');
+      }
     },
     /**
      * 帐号密码回车提交表单
@@ -408,10 +428,29 @@ export default {
     /**
      * 注册信息提交
      */
-    registerSubmit() {
-      this.checkPhoneInput(this.registerInfo, 'errorRegisterMsg', '');
+    async registerSubmit() {
+      // this.checkPhoneInput(this.registerInfo, 'errorRegisterMsg', '');
       this.checkInput(this.registerInfo, 'errorRegisterMsg');
-      // TODO:后台数据提交
+      // 后台数据提交,注册账号
+      console.log(111, this.registerInfo);
+      try {
+        let result = await this.postRequest('/user/signUp', {
+          username: this.registerInfo.username || 'knight',
+          password: this.registerInfo.password || '123456',
+        });
+        result = result.data;
+        if (result.errorCode !== 0) {
+          this.$message.error(result.errorMsg);
+        } else {
+          sessionStorage.setItem('user', JSON.stringify(result.username));
+          this.$router.push({
+            path: '/',
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        this.$message.error('注册失败，请稍后再试~');
+      }
     },
     /**
      * 回车提交注册
@@ -426,7 +465,7 @@ export default {
 <style scoped>
 .login-container {
   height: 100vh;
-  background-image: url('../assets/images/personalCenter/background.jpg');
+  background-image: url('http://d2f7o8gw4q8bay.cloudfront.net/background.jpg');
   background-size: 100%;
   background-repeat:no-repeat;
 }

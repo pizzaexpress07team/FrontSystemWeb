@@ -37,7 +37,7 @@
                v-model="checkContent"
                ref="content"
                autocomplete>
-        <label class="input-label">确认{{holder}}</label>
+        <label class="input-label">确认输入</label>
         <div class="error-wrapper"
              v-if="errorMsg"
         >{{errorMsg}}</div>
