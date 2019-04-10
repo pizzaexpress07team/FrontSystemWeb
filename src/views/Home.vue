@@ -45,6 +45,25 @@
         </div>
       </el-col>
     </el-row>
+    <el-row>
+      <el-col :span="24" class="app-container">
+        <div class="app-wrapper">
+          <img class="app-img" src="../assets/images/home/app.png" alt="APP">
+        </div>
+        <div class="push-wrapper">
+          <div class="push-word">APP新用户首次下单</div>
+          <div class="push-word highlight-word">立减15元</div>
+          <div class="push-word">立即下载App,享受<br/>更多优惠吧</div>
+        </div>
+        <div class="qrcode-wrapper">
+          <img class="qrcode-img" src="../assets/images/home/qrcode.png" alt="下载享受更多优惠">
+        </div>
+      </el-col>
+    </el-row>
+    <el-footer class="footer-fixed">
+      <strong>Copyright</strong>
+      <span> ©2019 PDQ All Rights Reserved</span>
+    </el-footer>
   </div>
 </template>
 
@@ -193,11 +212,87 @@ export default {
   .button-wrapper {
     height: 0;
     width: 100%;
-    position: relative;
+    margin-top: 50px;
     border: 1px dashed #FDD14B;
+  }
+  .app-container {
+    background: #FDD14B;
+    margin-top: 60px;
+    animation: slowShow;
+    animation-duration: 2.3s;
+    .app-wrapper {
+      display: inline-block;
+      width: 200px;
+      padding: 40px;
+      .app-img {
+        display: inline-block;
+        height: 300px;
+      }
+    }
+    .push-wrapper {
+      display: inline-block;
+      height: 200px;
+      vertical-align: top;
+      padding-top: 100px;
+      box-sizing: border-box;
+      .push-word {
+        min-height: 40px;
+        padding: 10px;
+        font-size: 20px;
+        box-sizing: border-box;
+        &.highlight-word {
+          font-size: 44px;
+          padding: 0;
+          color: #f56c6c;
+        }
+      }
+    }
+    .qrcode-wrapper {
+      display: inline-block;
+      height: 200px;
+      padding: 0 60px;
+      -webkit-transform: translateY(-20%);
+      transform: translateY(-38%);
+      box-sizing: border-box;
+      .qrcode-img {
+        display: inline-block;
+        height: 150px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #979797;
+      }
+    }
+  }
+  .footer-fixed {
+    text-align: center;
+    white-space: pre-wrap;
+    line-height: 30px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.7) 100%);
   }
 </style>
 <style lang="less">
   // 样式覆写
-
+  .home .button-wrapper {
+    .el-button {
+      position: relative;
+      transform: translateY(-50%);
+      width: 12em;
+      line-height: 22px;
+      background: #FDD14B;
+      color: #000000;
+      border: 1px solid #979797;
+      transition: background, box-shadow .5s;
+      &:hover {
+        background: #fff33b;
+        color: #000000;
+        border-color: #979797;
+        box-shadow: 0 4px 5px 2px rgba(0,0,0,0.1);
+      }
+    }
+  }
+  .home .footer-fixed {
+    padding: 5px 0;
+    height: 40px!important;
+  }
 </style>

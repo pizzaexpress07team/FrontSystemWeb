@@ -191,7 +191,7 @@
       </el-collapse-transition>
     </el-main>
     <el-footer class="footer-fixed">
-      <strong>Copyright</strong> © PDQ All Rights Reserved
+      <strong>Copyright</strong> © 2019 PDQ All Rights Reserved
     </el-footer>
   </el-container>
 </template>
@@ -329,7 +329,7 @@ export default {
             type: 'error',
           });
         } else {
-          sessionStorage.setItem('user', JSON.stringify(result.username));
+          sessionStorage.setItem('pdqUser', JSON.stringify(result.username));
           this.$router.push({
             path: '/',
           });
@@ -468,9 +468,6 @@ export default {
   background-image: url('http://d2f7o8gw4q8bay.cloudfront.net/background.jpg');
   background-size: 100%;
   background-repeat:no-repeat;
-}
-.logo-image {
-  width: 50px;
 }
 .left-wrapper {
   height: 100%;
