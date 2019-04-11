@@ -9,53 +9,18 @@
               tab-position="left"
               v-loading="getMenuState"
               style="height: 100%;">
-              <el-tab-pane label="肉食主义者">
+              <el-tab-pane
+                v-for="(listName, index) in menuNameList"
+                :label="listName"
+                :key="index">
                 <transition
                   name="el-fade-in-linear"
-                  :key="key"
-                  v-for="(item, key) in menuList.meat">
+                  v-for="(item, key) in menuObj[listName]"
+                  :key="key">
                   <div
                     v-show="firstPanelShow"
                     class="transition-box"
                     @click="choosePizza(item, key)">
-                    <el-card class="item-wrapper" shadow="hover">
-                      <div>{{item.p_name}}</div>
-                      <div class="image-wrapper">
-                        <img :src="item.p_picture" :alt="item.p_name">
-                      </div>
-                      <div class="card-wrapper"><i class="icon-cart"></i></div>
-                    </el-card>
-                  </div>
-                </transition>
-              </el-tab-pane>
-              <el-tab-pane label="最爱水果味">
-                <transition
-                  name="el-fade-in-linear"
-                  :key="key"
-                  v-for="(item, key) in menuList.fruit">
-                  <div
-                    v-show="firstPanelShow"
-                    class="transition-box"
-                    @click="choosePizza(item)">
-                    <el-card class="item-wrapper" shadow="hover">
-                      <div>{{item.p_name}}</div>
-                      <div class="image-wrapper">
-                        <img :src="item.p_picture" :alt="item.p_name">
-                      </div>
-                      <div class="card-wrapper"><i class="icon-cart"></i></div>
-                    </el-card>
-                  </div>
-                </transition>
-              </el-tab-pane>
-              <el-tab-pane label="健康蔬菜餐">
-                <transition
-                  name="el-fade-in-linear"
-                  :key="key"
-                  v-for="(item, key) in menuList.vegetable">
-                  <div
-                    v-show="firstPanelShow"
-                    class="transition-box"
-                    @click="choosePizza(item)">
                     <el-card class="item-wrapper" shadow="hover">
                       <div>{{item.p_name}}</div>
                       <div class="image-wrapper">
@@ -76,7 +41,10 @@
                 :key="index"
                 class="bag-item-wrapper"
                 v-for="(item, index) in myCart">
-                <div class="item-name">{{item.name}}</div>
+                <div class="item-header">
+                  <div class="item-name">{{item.name}}</div>
+                  <div v-if="item.nowChoose" class="item-now-choose">{{item.nowChoose}}</div>
+                </div>
                 <div class="item-size-price">
                   <span>尺寸：{{item.size}}</span>
                   <span style="text-align: right">单价：{{item.price}}</span>
@@ -137,6 +105,7 @@
 <script>
 // @ is an alias to /src
 import NavMenu from '@/components/NavMenu.vue';
+import { parseMenu } from '../utils/methods';
 
 export default {
   name: 'Menu',
@@ -147,17 +116,14 @@ export default {
     return {
       firstPanelShow: false, // 首次打开的菜单展示
       getMenuState: false, // 菜品获取状态
-      menuList: {
-        meat: [],
-        fruit: [],
-        vegetable: [],
-      },
+      menuObj: {}, // 用于存放不同菜品类型的菜品信息
+      menuNameList: [], // 用于存放菜品类型，例如小吃、披萨、饮品
       listTotal: 0, // 列表总数
       dialogVisible: false, // 菜品详细信息展示
       nowItem: {}, // 选中pizza的信息
       nowItemNum: 1, // 选中的pizza数量
       myCart: [], // 购物车信息
-      cartCount: 0, // 菜品总计
+      cartCount: 0, // 菜品金额总计
     };
   },
   mounted() {
@@ -184,15 +150,9 @@ export default {
           });
         } else {
           this.listTotal = result.total;
-          result.list.forEach((item) => {
-            if (item.p_type === '肉') {
-              this.menuList.meat.push(item);
-            } else if (item.p_type === '水果') {
-              this.menuList.fruit.push(item);
-            } else if (item.p_type === '蔬菜') {
-              this.menuList.vegetable.push(item);
-            }
-          });
+          const { menuObj, menuNameList } = parseMenu(result.list);
+          this.menuObj = menuObj;
+          this.menuNameList = menuNameList;
         }
       } catch (e) {
         console.log(e);
@@ -207,15 +167,9 @@ export default {
     choosePizza(pizzaItem, index) {
       this.dialogVisible = true;
       this.nowItem = pizzaItem;
-      // 用于修改
+      // 用于在菜品上显示选购信息
       this.nowItem.menuIndex = index;
-      if (pizzaItem.p_type === '肉') {
-        this.nowItem.menuType = 'meat';
-      } else if (pizzaItem.p_type === '水果') {
-        this.nowItem.menuType = 'fruit';
-      } else if (pizzaItem.p_type === '蔬菜') {
-        this.nowItem.menuType = 'vegetable';
-      }
+      this.nowItem.menuType = pizzaItem.p_type;
     },
     /**
      * 添加到购物车
@@ -226,11 +180,15 @@ export default {
         price: this.nowItem.price,
         size: this.nowItem.size,
         menuIndex: this.nowItem.menuIndex,
+        menuType: this.nowItem.menuType,
         num: this.nowItemNum,
       };
       this.myCart.push(cartItem);
       this.dialogVisible = false;
       this.cartCount += this.nowItem.price * this.nowItemNum;
+      // 对于菜单也要对用户的购物车商品作出标记
+      this.menuObj[cartItem.menuType][cartItem.menuIndex].nowChoose = cartItem.num;
+      console.log(222, this.menuObj);
     },
     /**
      * 添加菜品数量
