@@ -6,7 +6,7 @@
       <el-col :span="6" :offset="4" class="order-detail">
         <div class="order-header">
           <span class="title">订单详情</span>
-          <span class="change-button">返回修改点餐信息</span>
+          <span class="change-button" @click="backToMenu">返回修改点餐信息</span>
         </div>
         <el-table
           class="order-list"
@@ -33,7 +33,7 @@
         <div class="total-info">
           <span>总计：</span>
           <span class="money">￥<strong>{{totalMoney}}</strong></span>
-          <div class="total-item">共份商品</div>
+          <div class="total-item">共{{totalNumber}}份商品</div>
         </div>
       </el-col>
       <el-col :span="10" class="user-info"></el-col>
@@ -52,13 +52,20 @@ export default {
   },
   data() {
     return {
-      cartList: [],
-      totalMoney: 0,
+      cartList: [], // 菜品信息
+      totalMoney: 0, // 菜品总金额
+      totalNumber: 0, // 菜品总数量
     };
   },
   beforeMount() {
     this.cartList = this.$route.params.myCart;
     this.totalMoney = this.$route.params.totalMoney;
+    this.totalNumber = this.$route.params.totalNum;
+  },
+  methods: {
+    backToMenu() {
+      this.$router.go(-1);
+    },
   },
 };
 </script>

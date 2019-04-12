@@ -78,7 +78,7 @@
             <div class="bag-count" v-if="myCart.length !== 0">
               <span>总计：</span>
               <span>
-                ￥<strong>{{cartCount}}</strong>
+                ￥<strong>{{cartMoneyCount}}</strong>
               </span>
             </div>
             <div
@@ -144,7 +144,8 @@ export default {
       nowItem: {}, // 选中pizza的信息
       nowItemNum: 1, // 选中的pizza数量
       myCart: [], // 购物车信息
-      cartCount: 0, // 菜品金额总计
+      cartMoneyCount: 0, // 菜品金额总计
+      cartNumberCount: 0, // 菜品数量总计
     };
   },
   mounted() {
@@ -216,7 +217,6 @@ export default {
       // 如果列表已选购该商品，则更新该商品的信息
       let hasItem = false;
       const newCart = this.myCart.map((item) => {
-        console.log(item, cartItem);
         if (item.name === cartItem.name) {
           hasItem = true;
           return cartItem;
@@ -231,7 +231,7 @@ export default {
         this.myCart = newCart;
       }
       this.dialogVisible = false;
-      this.cartCount += this.nowItem.price * this.nowItemNum;
+      this.cartMoneyCount += this.nowItem.price * this.nowItemNum;
       // 对于菜单也要对用户的购物车商品作出标记
       this.menuObj[cartItem.menuType][cartItem.menuIndex].nowChoose = cartItem.num;
     },
@@ -250,7 +250,7 @@ export default {
         this.myCart[index].num = item.num + 1;
         this.menuObj[item.menuType][item.menuIndex].nowChoose = item.num;
       }
-      this.cartCount += item.price;
+      this.cartMoneyCount += item.price;
     },
     /**
      * 删除菜品数量
@@ -265,12 +265,14 @@ export default {
         this.myCart[index].num = item.num - 1;
         this.menuObj[item.menuType][item.menuIndex].nowChoose = item.num;
       }
-      this.cartCount -= item.price;
+      this.cartMoneyCount -= item.price;
     },
     /**
      * 清空购物车
      */
     emptyCart() {
+      this.cartNumberCount = 0;
+      this.cartMoneyCount = 0;
       this.myCart = [];
       this.getMenu();
     },
@@ -278,12 +280,16 @@ export default {
      * 跳转到订单确定页面
      */
     jumpToCheckOrder() {
-      console.log(this.myCart);
+      // 统计总菜品数量
+      this.myCart.forEach((item) => {
+        this.cartNumberCount += item.num;
+      });
       this.$router.push({
         name: 'checkOrder',
         params: {
           myCart: this.myCart,
-          totalMoney: this.cartCount,
+          totalMoney: this.cartMoneyCount,
+          totalNum: this.cartNumberCount,
         },
       });
     },
