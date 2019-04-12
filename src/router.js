@@ -26,5 +26,10 @@ export default new Router({
       name: 'menu',
       component: () => import('./views/Menu.vue'),
     },
+    {
+      path: '/checkOrder',
+      name: 'checkOrder',
+      component: () => import('./views/CheckOrder.vue'),
+    },
   ],
 });

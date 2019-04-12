@@ -22,7 +22,12 @@
                     class="transition-box"
                     @click="choosePizza(item, key)">
                     <el-card class="item-wrapper" shadow="hover">
-                      <div>{{item.p_name}}</div>
+                      <div class="item-header">
+                        <div class="food-name">{{item.p_name}}</div>
+                        <div
+                          v-if="item.nowChoose"
+                          class="choose-num">当前选购：{{item.nowChoose}}</div>
+                      </div>
                       <div class="image-wrapper">
                         <img :src="item.p_picture" :alt="item.p_name">
                       </div>
@@ -34,7 +39,15 @@
             </el-tabs>
           </el-col>
           <el-col :span="6" class="bag-wrapper">
-            <div class="bag-title">我的购物车</div>
+            <div class="bag-title">
+              我的购物车
+              <div
+                v-if="myCart.length !== 0"
+                class="empty-button"
+                @click="emptyCart">
+                <i class="icon-bin"></i>
+              </div>
+            </div>
             <div class="bag-empty-content" v-if="myCart.length === 0">购物车空空如也</div>
             <div class="bag-content" v-if="myCart.length !== 0">
               <div
@@ -67,6 +80,14 @@
               <span>
                 ￥<strong>{{cartCount}}</strong>
               </span>
+            </div>
+            <div
+              v-if="myCart.length !== 0"
+              class="confirm-order-button">
+              <el-button
+                @click="jumpToCheckOrder"
+                size="small"
+                type="primary">确认下单</el-button>
             </div>
           </el-col>
         </el-row>
@@ -166,7 +187,11 @@ export default {
      */
     choosePizza(pizzaItem, index) {
       this.dialogVisible = true;
+      this.nowItemNum = 0; // 清除缓存
       this.nowItem = pizzaItem;
+      if (pizzaItem.nowChoose) {
+        this.nowItemNum = pizzaItem.nowChoose;
+      }
       // 用于在菜品上显示选购信息
       this.nowItem.menuIndex = index;
       this.nowItem.menuType = pizzaItem.p_type;
@@ -175,20 +200,40 @@ export default {
      * 添加到购物车
      */
     addToCart() {
+      // 如果选择为0，则直接返回
+      if (this.nowItemNum === 0) {
+        this.dialogVisible = false;
+        return;
+      }
       const cartItem = {
         name: this.nowItem.p_name,
         price: this.nowItem.price,
-        size: this.nowItem.size,
+        size: this.nowItem.p_size,
         menuIndex: this.nowItem.menuIndex,
         menuType: this.nowItem.menuType,
         num: this.nowItemNum,
       };
-      this.myCart.push(cartItem);
+      // 如果列表已选购该商品，则更新该商品的信息
+      let hasItem = false;
+      const newCart = this.myCart.map((item) => {
+        console.log(item, cartItem);
+        if (item.name === cartItem.name) {
+          hasItem = true;
+          return cartItem;
+        }
+        return item;
+      });
+      if (!hasItem) {
+        // 如果没有已选购商品，则push新商品
+        this.myCart.push(cartItem);
+      } else {
+        // 如果有，则更新整个商品列表
+        this.myCart = newCart;
+      }
       this.dialogVisible = false;
       this.cartCount += this.nowItem.price * this.nowItemNum;
       // 对于菜单也要对用户的购物车商品作出标记
       this.menuObj[cartItem.menuType][cartItem.menuIndex].nowChoose = cartItem.num;
-      console.log(222, this.menuObj);
     },
     /**
      * 添加菜品数量
@@ -203,6 +248,7 @@ export default {
         });
       } else {
         this.myCart[index].num = item.num + 1;
+        this.menuObj[item.menuType][item.menuIndex].nowChoose = item.num;
       }
       this.cartCount += item.price;
     },
@@ -214,10 +260,32 @@ export default {
     deleteItemNum(item, index) {
       if (item.num - 1 === 0) {
         this.myCart.splice(index, 1);
+        this.menuObj[item.menuType][item.menuIndex].nowChoose = 0;
       } else {
         this.myCart[index].num = item.num - 1;
+        this.menuObj[item.menuType][item.menuIndex].nowChoose = item.num;
       }
       this.cartCount -= item.price;
+    },
+    /**
+     * 清空购物车
+     */
+    emptyCart() {
+      this.myCart = [];
+      this.getMenu();
+    },
+    /**
+     * 跳转到订单确定页面
+     */
+    jumpToCheckOrder() {
+      console.log(this.myCart);
+      this.$router.push({
+        name: 'checkOrder',
+        params: {
+          myCart: this.myCart,
+          totalMoney: this.cartCount,
+        },
+      });
     },
   },
 };
@@ -263,6 +331,20 @@ export default {
     color: #fff;
     padding: 10px;
     box-sizing: border-box;
+  }
+  .item-header {
+    text-align: left;
+    .food-name {
+      display: inline-block;
+      width: 50%;
+      text-align: left;
+    }
+    .choose-num {
+      display: inline-block;
+      width: 50%;
+      text-align: right;
+      color: #979797;
+    }
   }
   .image-wrapper {
     width: 100%;
@@ -314,6 +396,16 @@ export default {
       background: #f46c6c;
       line-height: 38px;
       color: #ffffff;
+      position: relative;
+      .empty-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0 15px;
+        &:hover {
+          cursor: pointer;
+        }
+      }
     }
     .bag-empty-content {
       color: #66666699;
@@ -321,7 +413,7 @@ export default {
     }
     .bag-item-wrapper {
       margin-top: 10px;
-      padding: 12px 12px;
+      padding: 12px;
       text-align: left;
       border-top: 1px solid #e3e3e3;
       border-bottom: 1px solid #e3e3e3;
@@ -373,7 +465,7 @@ export default {
     .bag-count {
       border-top: 1px solid #E3E3E3;
       border-radius: 0 0 4px 4px;
-      padding: 12px;
+      padding: 12px 12px 2px 12px;
       margin-top: 100px;
       span {
         display: inline-block;
@@ -402,6 +494,13 @@ export default {
     }
     .el-dialog__body {
       padding: 20px;
+    }
+    .confirm-order-button {
+      text-align: right;
+      padding: 0 12px 12px 0;
+      .el-button {
+        color: #666666;
+      }
     }
   }
 </style>

@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import ElementUI from 'element-ui';
+// 百度地图引入
+import BaiduMap from 'vue-baidu-map';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -22,6 +24,9 @@ Vue.prototype.$deleteRequest = deleteRequest;
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+Vue.use(BaiduMap, {
+  ak: 'tVhFbEhHkfSXzkpbNtN3g2KOZHBc3LOl',
+});
 
 new Vue({
   router,
