@@ -330,6 +330,7 @@ export default {
           });
         } else {
           sessionStorage.setItem('pdqUser', JSON.stringify(result.username));
+          sessionStorage.setItem('pdqUserId', JSON.stringify(result.uid));
           this.$router.push({
             path: '/',
           });
@@ -435,14 +436,15 @@ export default {
       console.log(111, this.registerInfo);
       try {
         let result = await this.postRequest('/user/signUp', {
-          username: this.registerInfo.username || 'knight',
-          password: this.registerInfo.password || '123456',
+          username: this.registerInfo.username,
+          password: this.registerInfo.password,
         });
         result = result.data;
         if (result.errorCode !== 0) {
           this.$message.error(result.errorMsg);
         } else {
-          sessionStorage.setItem('user', JSON.stringify(result.username));
+          sessionStorage.setItem('pdqUser', JSON.stringify(result.username));
+          sessionStorage.setItem('pdqUserId', JSON.stringify(result.uid));
           this.$router.push({
             path: '/',
           });

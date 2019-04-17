@@ -10,7 +10,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .map {
   width: 100%;
   .map-content {
