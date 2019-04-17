@@ -162,6 +162,7 @@ export default {
         lat: this.form.location.lat,
         name: this.form.name,
         phone: this.form.phone,
+        note: this.form.note,
       });
       this.userInfo.addr = JSON.stringify(userAddr);
       this.addNewAddr();
@@ -179,7 +180,14 @@ export default {
         } else {
           this.$message({
             message: '添加成功',
+            type: 'success',
           });
+          this.form = {
+            name: '',
+            addr: '',
+            location: {},
+            phone: '',
+          };
           this.getUserInfo();
         }
       } catch (e) {
@@ -207,10 +215,15 @@ export default {
      * @param queryString
      */
     async getSearchAddr(queryString) {
-      const getUrl = `http://api.map.baidu.com/place/v2/suggestion?city_limit=true&output=json&ak=tVhFbEhHkfSXzkpbNtN3g2KOZHBc3LOl&region=上海&query=${queryString}`;
-      const result = await axios({
-        method: 'GET',
-        url: getUrl,
+      // const getUrl = `http://api.map.baidu.com/place/v2/suggestion?city_limit=true&output=json&ak=tVhFbEhHkfSXzkpbNtN3g2KOZHBc3LOl&region=上海&query=${queryString}`;
+      const result = await axios.get('/baiduApi', {
+        params: {
+          city_limit: true,
+          output: 'json',
+          ak: 'tVhFbEhHkfSXzkpbNtN3g2KOZHBc3LOl',
+          region: '上海',
+          query: queryString,
+        },
       });
       console.log(result);
       if (result.data) {

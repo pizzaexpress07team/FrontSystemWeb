@@ -41,4 +41,16 @@ module.exports = {
       },
     },
   },
+  devServer: {
+    proxy: {
+      '/baiduApi': {
+        target: 'http://api.map.baidu.com/place/v2/suggestion',
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/baiduApi': '',
+        },
+      },
+    },
+  },
 };
