@@ -99,7 +99,7 @@
 
 <script>
 import NavMenu from '@/components/NavMenu.vue';
-// import axios from 'axios';
+import axios from 'axios';
 
 export default {
   name: 'CheckOrder',
@@ -111,14 +111,7 @@ export default {
       cartList: [], // 菜品信息
       totalMoney: 0, // 菜品总金额
       totalNumber: 0, // 菜品总数量
-      userAddressList: [
-        {
-          name: '曾淦1', detail: '华东师范大学第五宿舍', note: '427', phone: '15317786280',
-        },
-        {
-          name: '曾淦2', detail: '华东师范大学第五宿舍', note: '427', phone: '15317786280',
-        },
-      ],
+      userAddressList: [],
       radio: 0,
       dialogFormVisible: false,
       form: {
@@ -214,8 +207,11 @@ export default {
      * @param queryString
      */
     async getSearchAddr(queryString) {
-      const url = `http://api.map.baidu.com/place/v2/suggestion?city_limit=true&output=json&ak=tVhFbEhHkfSXzkpbNtN3g2KOZHBc3LOl&region=上海&query=${queryString}`;
-      const result = await this.getRequest(url);
+      const getUrl = `http://api.map.baidu.com/place/v2/suggestion?city_limit=true&output=json&ak=tVhFbEhHkfSXzkpbNtN3g2KOZHBc3LOl&region=上海&query=${queryString}`;
+      const result = await axios({
+        method: 'GET',
+        url: getUrl,
+      });
       console.log(result);
       if (result.data) {
         return result.data.result;
@@ -361,8 +357,8 @@ export default {
       }
     }
     .pay-wrapper {
-      padding: 0 15px;
       .pay-content {
+        margin-left: 15px;
         padding: 0 15px;
         border: 1px solid #FDD14B;
         border-radius: 4px;

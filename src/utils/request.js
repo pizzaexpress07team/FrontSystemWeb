@@ -10,6 +10,7 @@ axios.interceptors.request.use((config) => {
       ...newConfig.data,
     });
   }
+  console.log(2333, newConfig.data);
   return newConfig;
 }, (err) => {
   Message.error({ message: '请求超时!' });
@@ -41,7 +42,7 @@ export const postRequest = (url, params) => axios({
   url: `${base}${url}`,
   data: params,
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': 'application/json',
   },
 });
 
@@ -50,7 +51,7 @@ export const putRequest = (url, params) => axios({
   url: `${base}${url}`,
   data: params,
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': 'application/json',
   },
 });
 
