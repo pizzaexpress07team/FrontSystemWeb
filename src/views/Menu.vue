@@ -300,6 +300,7 @@ export default {
 <style scoped lang="less">
   .bag-menu-container {
     padding: 40px 0;
+    text-align: left;
     .item-wrapper {
       height: 100%;
       cursor: pointer;
@@ -398,6 +399,7 @@ export default {
     box-shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
     border-radius: 4px;
     overflow: hidden;
+    text-align: center;
     .bag-title {
       background: #f46c6c;
       line-height: 38px;

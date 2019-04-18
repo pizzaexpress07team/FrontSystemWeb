@@ -32,11 +32,24 @@ export const router = new Router({
       path: '/checkOrder',
       name: 'checkOrder',
       component: () => import('./views/CheckOrder.vue'),
+      meta: {
+        keepAlive: true,
+      },
     },
     {
       path: '/addrManage',
       name: 'addrManage',
       component: () => import('./views/AddrManage.vue'),
+    },
+    {
+      path: '/orderList',
+      name: 'orderList',
+      component: () => import('./views/OrderList.vue'),
+    },
+    {
+      path: '/orderDetail',
+      name: 'orderDetail',
+      component: () => import('./views/OrderDetail.vue'),
     },
   ],
 });

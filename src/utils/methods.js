@@ -24,7 +24,7 @@ export const parseMenu = (itemList) => {
  * @param nowTimestamp
  * @returns {string} 2019-04-15 22:22:22
  */
-export const timetrans = (nowTimestamp) => {
+export const timeTrans = (nowTimestamp) => {
   const date = new Date(nowTimestamp * 1000); // 如果date为13位不需要乘1000
   const Y = `${date.getFullYear()}-`;
   const M = `${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-`;

@@ -59,11 +59,11 @@
           <div class="header-title">付款方式</div>
           <div class="pay-content">
             <p>在线支付</p>
-            <p class="pay-way">目前仅支持支付宝支付</p>
+            <p class="pay-way">目前支持支付宝、微信支付</p>
           </div>
         </div>
         <div class="check-wrapper">
-          <el-button type="danger" @click="checkOrder">确认下单</el-button>
+          <el-button type="danger" v-loading="checkLoading" @click="checkOrder">确认订单</el-button>
         </div>
       </el-col>
     </el-row>
@@ -123,6 +123,7 @@ export default {
       },
       userInfo: {},
       formLabelWidth: '120px',
+      checkLoading: false, // 下单状态
     };
   },
   beforeMount() {
@@ -255,14 +256,42 @@ export default {
       this.form.addr = item.value;
       this.form.location = item.location;
     },
-    checkOrder() {
+    /**
+     * 确认订单。跳转订单详情页
+     * @returns {Promise<void>}
+     */
+    async checkOrder() {
       const uid = JSON.parse(sessionStorage.getItem('pdqUserId'));
+      if (!this.cartList || this.cartList.length === 0) {
+        this.$message.error('商品列表为空哦，请先添加商品');
+        return;
+      }
       const params = {
         u_id: uid,
         total_price: this.totalMoney,
         detail: JSON.stringify(this.cartList),
+        addrID: this.radio,
       };
       console.log('确认下单', params);
+      try {
+        this.checkLoading = true;
+        const url = '/order/create';
+        const result = await this.postRequest(url, params);
+        if (result.data.errorCode === 0 && result.data.o_id) {
+          this.checkLoading = false;
+          this.$router.push({
+            name: 'orderDetail',
+            params: {
+              o_id: result.data.o_id,
+            },
+          });
+        } else {
+          this.$message.error(result.data.errorMsg);
+        }
+      } catch (e) {
+        this.checkLoading = false;
+        this.$message.error('创建订单失败，请稍后重试');
+      }
     },
   },
 };

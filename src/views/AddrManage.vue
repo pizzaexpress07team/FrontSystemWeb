@@ -2,28 +2,36 @@
   <div class="addr-manage">
     <NavMenu />
     <div class="addr-wrapper">
+      <div class="breadcrumb-wrapper">
+        <el-breadcrumb separator-class="el-icon-arrow-right">
+          <el-breadcrumb-item>我的</el-breadcrumb-item>
+          <el-breadcrumb-item>地址管理</el-breadcrumb-item>
+        </el-breadcrumb>
+      </div>
       <div class="add-addr-wrapper" @click="newAddr">
         <i class="el-icon-circle-plus-outline"></i>添加新的收货地址
       </div>
-      <el-row
-        type="flex"
-        v-for="(item, index) in userAddressList"
-        :key="index">
-        <el-col :span="21" class="content-wrapper">
-          <div class="addr-item name"><strong>收货人：</strong>{{item.name || '-'}}</div>
-          <div class="addr-item phone"><strong>联系方式：</strong>{{item.phone || '-'}}</div>
-          <div class="addr-item detail"><strong>收货地址：</strong>{{item.detail || '-'}}</div>
-          <div class="addr-item note"><strong>详细地址：</strong>{{item.note || '-'}}</div>
-        </el-col>
-        <el-col :span="3">
-          <div class="right-button edit-button" @click="editUserAddr(index, 'edit')">
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
-          </div>
-          <div class="right-button delete-button" @click="editUserAddr(index, 'delete')">
-            <el-button type="danger" icon="el-icon-delete" circle></el-button>
-          </div>
-        </el-col>
-      </el-row>
+      <div class="address-wrapper" v-loading="editLoading">
+        <el-row
+          type="flex"
+          v-for="(item, index) in userAddressList"
+          :key="index">
+          <el-col :span="21" class="content-wrapper">
+            <div class="addr-item name"><strong>收货人：</strong>{{item.name || '-'}}</div>
+            <div class="addr-item phone"><strong>联系方式：</strong>{{item.phone || '-'}}</div>
+            <div class="addr-item detail"><strong>收货地址：</strong>{{item.detail || '-'}}</div>
+            <div class="addr-item note"><strong>详细地址：</strong>{{item.note || '-'}}</div>
+          </el-col>
+          <el-col :span="3">
+            <div class="right-button edit-button" @click="editUserAddr(index, 'edit')">
+              <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            </div>
+            <div class="right-button delete-button" @click="editUserAddr(index, 'delete')">
+              <el-button type="danger" icon="el-icon-delete" circle></el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
     </div>
     <el-dialog title="添加收货地址" :visible.sync="dialogFormVisible">
       <el-form :model="form">
@@ -79,6 +87,7 @@ export default {
       },
       isEdit: false, // 是否为编辑地址
       editIndex: 0, // 当为编辑时编辑的地址序号
+      editLoading: false, // 加载状态
     };
   },
   beforeMount() {
@@ -90,13 +99,16 @@ export default {
      */
     async getUserInfo() {
       const uid = JSON.parse(sessionStorage.getItem('pdqUserId'));
+      this.editLoading = true;
       try {
         const result = await this.getRequest(`/user/view?uid=${uid}`);
         this.userInfo = result.data.userInfo;
         if (result.data.userInfo.addr !== '') {
           this.userAddressList = JSON.parse(result.data.userInfo.addr);
         }
+        this.editLoading = false;
       } catch (e) {
+        this.editLoading = false;
         console.log(e);
       }
     },
@@ -200,6 +212,7 @@ export default {
      * 地址修改请求
      */
     async updateAddrInfo() {
+      this.editLoading = true;
       try {
         const url = '/user/modify';
         const params = this.userInfo;
@@ -263,13 +276,13 @@ export default {
     margin: 0 18%;
     text-align: left;
     position: relative;
-    padding-top: 58px;
+    padding-top: 68px;
     .add-addr-wrapper {
       position: absolute;
       right: 0;
       top: 0;
       line-height: 38px;
-      margin: 10px 0;
+      margin: 18px 0;
       padding: 0 10px;
       border-radius: 8px;
       color: #444444;
@@ -322,6 +335,10 @@ export default {
         border: 2px solid #FDD14B;
         cursor: pointer;
       }
+    }
+    .breadcrumb-wrapper {
+      position: absolute;
+      top: 24px;
     }
   }
   .el-autocomplete {

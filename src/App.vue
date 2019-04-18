@@ -23,4 +23,8 @@ body {
 a {
   text-decoration: none;
 }
+.breadcrumb-wrapper {
+  margin-bottom: 20px;
+  padding-left: 30px;
+}
 </style>

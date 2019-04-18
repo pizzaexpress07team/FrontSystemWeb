@@ -70,7 +70,9 @@ export default {
           path: '/addrManage',
         });
       } else if (command === 'checkOrder') {
-        // TODO:跳转到订单管理页
+        this.$router.push({
+          path: '/orderList',
+        });
       } else if (command === 'userLogout') {
         sessionStorage.removeItem('pdqUser');
         sessionStorage.removeItem('isLogin');
