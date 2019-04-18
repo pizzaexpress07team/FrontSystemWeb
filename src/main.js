@@ -4,7 +4,7 @@ import ElementUI from 'element-ui';
 // 百度地图引入
 import BaiduMap from 'vue-baidu-map';
 import App from './App.vue';
-import router from './router';
+import { router } from './router';
 import './theme/index.css';
 // 引入svg图标
 import './svg';

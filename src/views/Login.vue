@@ -331,6 +331,7 @@ export default {
         } else {
           sessionStorage.setItem('pdqUser', JSON.stringify(result.username));
           sessionStorage.setItem('pdqUserId', JSON.stringify(result.uid));
+          sessionStorage.setItem('isLogin', true);
           this.$router.push({
             path: '/',
           });
@@ -445,6 +446,7 @@ export default {
         } else {
           sessionStorage.setItem('pdqUser', JSON.stringify(result.username));
           sessionStorage.setItem('pdqUserId', JSON.stringify(result.uid));
+          sessionStorage.setItem('isLogin', true);
           this.$router.push({
             path: '/',
           });

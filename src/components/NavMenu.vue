@@ -52,7 +52,7 @@ export default {
   },
   beforeMount() {
     // 判断是否有登录态
-    if (sessionStorage.getItem('pdqUser')) {
+    if (sessionStorage.getItem('pdqUserId') && sessionStorage.getItem('isLogin')) {
       this.username = JSON.parse(sessionStorage.getItem('pdqUser'));
       this.hasLogin = true;
     }
@@ -66,11 +66,15 @@ export default {
       if (command === 'checkPerson') {
         // TODO:跳转到首页
       } else if (command === 'changeAddr') {
-        // TODO:跳转到地址管理页
+        this.$router.push({
+          path: '/addrManage',
+        });
       } else if (command === 'checkOrder') {
         // TODO:跳转到订单管理页
       } else if (command === 'userLogout') {
         sessionStorage.removeItem('pdqUser');
+        sessionStorage.removeItem('isLogin');
+        sessionStorage.removeItem('pdqUserName');
         this.$router.go(0);
       }
     },

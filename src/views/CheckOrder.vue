@@ -165,12 +165,12 @@ export default {
         note: this.form.note,
       });
       this.userInfo.addr = JSON.stringify(userAddr);
-      this.addNewAddr();
+      this.updateAddrInfo();
     },
     /**
      * 添加新地址请求
      */
-    async addNewAddr() {
+    async updateAddrInfo() {
       try {
         const url = '/user/modify';
         const params = this.userInfo;
@@ -205,8 +205,8 @@ export default {
         if (result.data.userInfo.addr !== '') {
           this.userAddressList = JSON.parse(result.data.userInfo.addr);
         }
-        console.log(this.userInfo, this.userAddressList);
       } catch (e) {
+        this.$message.error('用户信息获取失败');
         console.log(e);
       }
     },
@@ -354,6 +354,8 @@ export default {
       }
       .address-content {
         padding: 0 15px;
+        max-height: 360px;
+        overflow-y: auto;
       }
       .info-wrapper {
         color: #333333;
