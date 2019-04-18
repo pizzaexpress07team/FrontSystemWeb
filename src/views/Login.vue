@@ -265,9 +265,9 @@ export default {
      * @param data
      */
     registerChange(data) {
-      if (data.label === '帐号') {
+      if (data.label === '请输入账号名称') {
         this.registerInfo.username = data.content;
-      } else if (data.label === '密码') {
+      } else if (data.label === '请输入密码') {
         if (data.otherInfo && typeof data.otherInfo === 'string') {
           this.errorRegisterMsg[3] = data.otherInfo;
           return;
@@ -282,6 +282,7 @@ export default {
         }
         this.registerInfo.captcha = data.content;
       }
+      console.log(23333, data, this.registerInfo);
     },
     /**
      * 表单格式检查
