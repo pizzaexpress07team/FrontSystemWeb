@@ -156,7 +156,7 @@ export default {
      */
     handleAddAddr() {
       this.dialogFormVisible = false;
-      const userAddr = this.userAddressList;
+      const userAddr = this.userAddressList || [];
       userAddr.push({
         detail: this.form.addr,
         lng: this.form.location.lng,

@@ -78,7 +78,7 @@ export default {
      * 获取用户订单信息
      */
     async getOrderList() {
-      const uid = sessionStorage.getItem('pdqUserId');
+      const uid = sessionStorage.getItem('pdqUserId').replace(/"/g, '').trim();
       try {
         this.loading = true;
         const url = `/order/view?uid=${uid}&pno=1&pageSize=100`;

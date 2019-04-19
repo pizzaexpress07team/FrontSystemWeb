@@ -33,7 +33,7 @@
         </el-row>
       </div>
     </div>
-    <div v-if="!this.userAddressList" class="empty-wrapper">
+    <div v-if="!this.userAddressList || this.userAddressList.length === 0" class="empty-wrapper">
       暂无地址信息
     </div>
     <el-dialog title="添加收货地址" :visible.sync="dialogFormVisible">
@@ -199,7 +199,6 @@ export default {
         phone: this.form.phone,
         note: this.form.note,
       };
-      console.log(2333, editAddr);
       if (this.isEdit) {
         // 如果为编辑则修改该项;
         userAddr[this.editIndex] = editAddr;
