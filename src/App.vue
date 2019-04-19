@@ -27,4 +27,11 @@ a {
   margin-bottom: 20px;
   padding-left: 30px;
 }
+.empty-wrapper {
+  padding: 20px;
+  line-height: 100px;
+  font-size: 22px;
+  color: #979797;
+  text-align: center;
+}
 </style>

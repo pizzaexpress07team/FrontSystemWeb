@@ -33,6 +33,9 @@
         </el-row>
       </div>
     </div>
+    <div v-if="!this.userAddressList" class="empty-wrapper">
+      暂无地址信息
+    </div>
     <el-dialog title="添加收货地址" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="姓名" :label-width="formLabelWidth">
@@ -187,7 +190,7 @@ export default {
      */
     handleAddAddr() {
       this.dialogFormVisible = false;
-      const userAddr = this.userAddressList;
+      const userAddr = this.userAddressList || [];
       const editAddr = {
         detail: this.form.addr,
         lng: this.form.location.lng,
@@ -196,11 +199,16 @@ export default {
         phone: this.form.phone,
         note: this.form.note,
       };
+      console.log(2333, editAddr);
       if (this.isEdit) {
         // 如果为编辑则修改该项;
         userAddr[this.editIndex] = editAddr;
       } else {
         // 如果为新增，则在数组最前添加1
+        console.log(this.userAddressList,this.userAddressList === null);
+        if (this.userAddressList === null) {
+          this.userAddressList = [];
+        }
         userAddr.unshift(editAddr);
       }
       this.userInfo.addr = JSON.stringify(userAddr);

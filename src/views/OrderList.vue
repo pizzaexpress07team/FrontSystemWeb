@@ -47,6 +47,9 @@
         </el-card>
       </el-timeline-item>
     </el-timeline>
+    <div v-if="this.orderList.length === 0" class="empty-wrapper">
+      暂无订单信息
+    </div>
   </div>
 </div>
 </template>
@@ -78,11 +81,11 @@ export default {
       const uid = sessionStorage.getItem('pdqUserId');
       try {
         this.loading = true;
-        const url = `/order/list?uid=${uid}&pno=1&pageSize=100`;
+        const url = `/order/view?uid=${uid}&pno=1&pageSize=100`;
         const result = await this.getRequest(url);
-        if (result.data || result.data.errorCode !== 0) {
+        if (result.data) {
           // 如果无错误，则将信息存贮到data中
-          this.orderList = result.data;
+          this.orderList = result.data.list;
         } else {
           this.$message.error(result.data.errorMsg);
         }
