@@ -105,7 +105,7 @@
       </div>
       <div class="resource-wrapper">
         主要原料：<span>鸡肉、蔬菜</span><br/>
-        尺寸：<span>{{nowItem.p_size}}寸</span>
+        尺寸：<span>{{nowItem.p_size}}</span>
       </div>
       <div class="number-wrapper">
         数量：<el-input-number
@@ -364,6 +364,7 @@ export default {
     border-radius: 8px;
   }
   .menu-wrapper {
+    min-height: 100px;
     .image-wrapper {
       margin-top: 15px;
       height: 150px;

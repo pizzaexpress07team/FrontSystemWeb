@@ -8,7 +8,7 @@
         <el-breadcrumb-item>订单管理</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-    <el-timeline v-loading="loading">
+    <el-timeline v-loading="loading" reverse>
       <el-timeline-item
         v-for="(item, index) in orderList"
         :key="index"
@@ -21,7 +21,7 @@
                 <strong>订单号：</strong>{{item.o_id}}
               </div>
               <div class="order-main">
-                <strong>{{briefOrderDetail(item)}}</strong>
+                <strong>{{briefOrderDetail(item.detail)}}</strong>
               </div>
             </el-col>
             <el-col :span="6">
@@ -32,10 +32,10 @@
             </el-col>
             <el-col :span="6">
               <div class="order-main">
-                <strong>支付状态：</strong>{{item.o_pay_state}}
+                <strong>支付状态：</strong>{{parsePayState(item.o_pay_state)}}
               </div>
               <div class="order-main">
-                <strong>配送状态：</strong>{{item.delivery_state}}
+                <strong>配送状态：</strong>{{parseDeliveryState(item.delivery_state)}}
               </div>
             </el-col>
             <el-col :span="4" class="button-wrapper">
@@ -54,7 +54,7 @@
 <script>
 // @ is an alias to /src
 import NavMenu from '@/components/NavMenu.vue';
-import { timeTrans } from '../utils/methods';
+import { timeTrans, parsePayState, parseDeliveryState } from '../utils/methods';
 
 export default {
   name: 'OrderList',
@@ -63,24 +63,7 @@ export default {
   },
   data() {
     return {
-      orderList: [
-        {
-          o_id: 'DA32JASF91ADF3',
-          o_create_time: 1555592197000,
-          detail: '',
-          total_price: 90,
-          o_pay_state: '已支付',
-          delivery_state: '派送中',
-        },
-        {
-          o_id: 'DA32JASF91ADF3',
-          o_create_time: 1555592193000,
-          detail: '',
-          total_price: 90,
-          o_pay_state: '已支付',
-          delivery_state: '派送中',
-        },
-      ], // 订单列表
+      orderList: [], // 订单列表
       loading: false, // 加载状态
     };
   },
@@ -95,15 +78,11 @@ export default {
       const uid = sessionStorage.getItem('pdqUserId');
       try {
         this.loading = true;
-        const url = `/order/list?uid=${uid}`;
+        const url = `/order/list?uid=${uid}&pno=1&pageSize=100`;
         const result = await this.getRequest(url);
-        if (result.data && result.data.errorCode !== 0) {
+        if (result.data || result.data.errorCode !== 0) {
           // 如果无错误，则将信息存贮到data中
-          this.orderInfo = result.data;
-          this.orderState = result.data;
-          this.orderHasPay = result.o_pay_state;
-          this.cartList = JSON.parse(result.data.detail);
-          this.totalMoney = result.data.total_price;
+          this.orderList = result.data;
         } else {
           this.$message.error(result.data.errorMsg);
         }
@@ -119,7 +98,7 @@ export default {
      * @param timestamp
      */
     formatTime(timestamp) {
-      const date = timeTrans(timestamp);
+      const date = timeTrans(timestamp / 1000);
       return `下单时间 ${date}`;
     },
     /**
@@ -128,10 +107,11 @@ export default {
      * @returns {string}
      */
     briefOrderDetail(orderMenuInfo) {
-      console.log(orderMenuInfo);
-      // const menu = JSON.parse(orderMenuInfo);
-      // return `${menu[1].name}等${menu.length}个菜品`;
-      return '留恋披萨等1个菜品';
+      const menu = JSON.parse(orderMenuInfo);
+      if (menu[1] && menu[1].name) {
+        return `${menu[1].name}等${menu.length}个菜品`;
+      }
+      return '0个菜品';
     },
     /**
      * 跳转到订单详情页
@@ -140,10 +120,16 @@ export default {
     checkOrderDetail(orderId) {
       this.$router.push({
         name: 'orderDetail',
-        params: {
+        query: {
           o_id: orderId,
         },
       });
+    },
+    parsePayState(payState) {
+      return parsePayState(payState);
+    },
+    parseDeliveryState(deliveryState) {
+      return parseDeliveryState(deliveryState);
     },
   },
 };

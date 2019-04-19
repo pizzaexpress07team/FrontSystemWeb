@@ -34,3 +34,26 @@ export const timeTrans = (nowTimestamp) => {
   const s = (date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds());
   return Y + M + D + h + m + s;
 };
+
+/**
+ * 解析支付状态
+ * @param payState
+ * @returns {string}
+ */
+export const parsePayState = payState => (payState === 0 ? '未支付' : '已支付');
+
+/**
+ * 解析配送状态
+ * @param payState
+ * @returns {string}
+ */
+export const parseDeliveryState = (deliveryState) => {
+  if (deliveryState === 0) {
+    return '未配送';
+    // eslint-disable-next-line
+  } else if (deliveryState === 1) {
+    return '配送中';
+  } else {
+    return '已送达';
+  }
+};

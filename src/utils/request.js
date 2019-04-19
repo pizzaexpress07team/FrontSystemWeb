@@ -10,7 +10,6 @@ axios.interceptors.request.use((config) => {
       ...newConfig.data,
     });
   }
-  console.log(2333, newConfig.data);
   return newConfig;
 }, (err) => {
   Message.error({ message: '请求超时!' });

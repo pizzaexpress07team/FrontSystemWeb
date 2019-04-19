@@ -29,7 +29,7 @@
         <div class="total-info">
           <span>总计：</span>
           <span class="money">￥<strong>{{totalMoney}}</strong></span>
-          <div class="total-item">共{{totalNumber}}份商品</div>
+          <div class="total-item">共{{cartList.length}}份商品</div>
         </div>
       </el-col>
       <el-col :span="12">
@@ -43,13 +43,14 @@
           <div class="info-item">
             <h4>收货人信息</h4>
             <p class="info-content">
-              联系人：{{orderInfo.name || '-'}}
+              <span>联系人：</span>{{addrInfo.name || '-'}}
             </p>
             <p class="info-content">
-              联系电话：{{orderInfo.phone || '-'}}
+              <span>联系电话：</span>{{addrInfo.phone || '-'}}
             </p>
             <p class="info-content">
-              收货地址：{{orderInfo.o_delivery_addr || '-'}}
+              <span>收货地址：</span>{{addrInfo.detail || '-'}}<br />
+              <span class="addr-note">{{addrInfo.note}}</span>
             </p>
           </div>
         </div>
@@ -66,7 +67,7 @@ export default {
     orderInfo: Object,
     cartList: Array,
     totalMoney: Number,
-    totalNumber: Number,
+    addrInfo: Object,
   },
   data() {
     return {};
@@ -78,10 +79,13 @@ export default {
      * @returns {string}
      */
     parseDelivery(deliverState) {
-      if (deliverState) {
+      if (deliverState === 2) {
         return '配送完成';
+        // eslint-disable-next-line
+      } else if (deliverState === 1) {
+        return '配送中';
       }
-      return '配送中';
+      return '未配送';
     },
   },
 };
@@ -143,6 +147,14 @@ export default {
     .info-content {
       padding: 0 0 10px;
       margin: 5px 0 ;
+      span {
+        display: inline-block;
+        width: 70px;
+      }
+      .addr-note {
+        display: block;
+        padding: 10px 0 0 70px;
+      }
     }
   }
 }

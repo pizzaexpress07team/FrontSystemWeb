@@ -45,7 +45,11 @@
     </div>
   </el-collapse-transition>
   <div class="order-detail-wrapper" v-loading="orderLoading">
-    <OrderDetailInfo :cartList="cartList" :orderInfo="orderInfo" />
+    <OrderDetailInfo
+      :addrInfo="addrInfo"
+      :totalMoney="totalMoney"
+      :cartList="cartList"
+      :orderInfo="orderInfo" />
   </div>
 </div>
 </template>
@@ -72,6 +76,7 @@ export default {
       totalMoney: 0,
       orderLoading: false,
       interval: null,
+      addrInfo: {},
     };
   },
   beforeMount() {
@@ -104,16 +109,21 @@ export default {
       try {
         // todo:根据oid获取订单信息
         this.orderLoading = true;
-        const url = `/order/list?o_id=${this.o_id}`;
+        const url = `/order/query?o_id=${this.o_id}`;
         const result = await this.getRequest(url);
-        if (result.data && result.data.errorCode !== 0) {
-          const info = result.data;
+        if (result.data && result.data.errorCode === 0) {
+          const info = result.data.order;
+          console.log(info);
           // 如果无错误，则将信息存贮到data中
           this.orderInfo = info;
           this.orderState = this.checkOrderState(info.delivery_state, info.o_pay_state); // 订单状态
-          this.orderHasPay = result.o_pay_state;
-          this.cartList = JSON.parse(result.data.detail);
-          this.totalMoney = result.data.total_price;
+          this.orderHasPay = info.o_pay_state === 1;
+          this.cartList = JSON.parse(info.detail);
+          this.totalMoney = info.total_price;
+          this.addrInfo = JSON.parse(info.o_delivery_addr);
+          if (info.delivery_state === 1 && info.o_pay_state === 1) {
+            clearInterval(this.interval);
+          }
           if (!this.orderHasPay) {
             // 如果仍在订单支付页面
             this.setPayTimeInterval(5, 0);
@@ -132,7 +142,7 @@ export default {
     async updateOrderInfo() {
       try {
         // todo:更新订单状态
-        const url = '/order/update';
+        const url = '/order/confirm';
         const params = this.orderInfo;
         const result = await this.postRequest(url, params);
         if (result.data && result.data.errorCode === 0) {
@@ -155,12 +165,12 @@ export default {
      * @param deliveryState
      */
     checkOrderState(deliveryState, payState) {
-      if (deliveryState && payState) {
+      if (deliveryState === 2 && payState === 1) {
         return 4;
         // eslint-disable-next-line
-      } else if (!deliveryState && payState) {
+      } else if (deliveryState === 1 && payState === 1) {
         return 3;
-      } else if (!deliveryState && !payState) {
+      } else if (deliveryState === 0 && payState === 0) {
         return 2;
       }
       return 1;
@@ -168,9 +178,20 @@ export default {
     /**
      * 确认支付，更新订单状态
      */
-    finishPay() {
-      this.orderInfo.o_pay_state = true;
-      this.updateOrderInfo();
+    async finishPay() {
+      this.orderInfo.o_pay_state = 1;
+      try {
+        const url = `/order/pay?o_id=${this.o_id}`;
+        const result = await this.getRequest(url);
+        if (result.data.errorCode === 0) {
+          this.getOrderInfo();
+        } else {
+          this.$message.error(result.data.errorMsg);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      clearInterval(this.interval);
     },
     /**
      * 订单支付时间定时器
@@ -179,7 +200,7 @@ export default {
      */
     setPayTimeInterval(minute, second) {
       let waitTime = minute * 60 + second;
-      const timeInterval = setInterval(() => {
+      const orderInterval = setInterval(() => {
         waitTime -= 1;
         if (waitTime > 0) {
           const waitMinute = parseInt(waitTime / 60, 10);
@@ -189,7 +210,7 @@ export default {
           waitTime = minute * 60 + second;
           this.leftPayTime = 0;
           // todo:超时应向服务器发起请求，取消订单
-          clearInterval(timeInterval);
+          clearInterval(orderInterval);
         }
       }, 1000);
     },

@@ -272,21 +272,34 @@ export default {
         detail: JSON.stringify(this.cartList),
         addrID: this.radio,
       };
-      console.log('确认下单', params);
       try {
         this.checkLoading = true;
-        const url = '/order/create';
+        const url = '/order/confirm';
         const result = await this.postRequest(url, params);
         if (result.data.errorCode === 0 && result.data.o_id) {
           this.checkLoading = false;
           this.$router.push({
             name: 'orderDetail',
-            params: {
+            query: {
               o_id: result.data.o_id,
             },
           });
         } else {
-          this.$message.error(result.data.errorMsg);
+          // eslint-disable-next-line
+          if (result.data.errorCode === 2) {
+            this.$alert('您的订单超出配送范围，请修改地址信息', '下单失败', {
+              confirmButtonText: '确定',
+              callback: () => {
+                this.$message({
+                  type: 'warning',
+                  message: '重新下单',
+                });
+              },
+            });
+          } else {
+            this.$message.error(result.data.errorMsg);
+          }
+          this.checkLoading = false;
         }
       } catch (e) {
         this.checkLoading = false;
