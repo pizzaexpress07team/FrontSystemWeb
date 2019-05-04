@@ -39,6 +39,14 @@
             <p class="info-content">
               配送状态：{{parseDelivery(orderInfo.delivery_state) || '-'}}
             </p>
+<!--            <p class="info-content">-->
+<!--              配送员：
+{{parseDeliveryman(orderInfo.delivery_state, orderInfo.deliveryman, 'name') || '-'}}-->
+<!--            </p>-->
+<!--            <p class="info-content">-->
+<!--              配送员电话号码：
+{{parseDeliveryman(orderInfo.delivery_state, orderInfo.deliveryman, 'phone') || '-'}}-->
+<!--            </p>-->
           </div>
           <div class="info-item">
             <h4>收货人信息</h4>
@@ -84,9 +92,22 @@ export default {
         // eslint-disable-next-line
       } else if (deliverState === 1) {
         return '配送中';
+      } else if (deliverState === 3) {
+        return '已取消';
       }
       return '未配送';
     },
+    // parseDeliveryman(deliverState, deliveryman, name) {
+    //   if (deliverState === 1) {
+    //     return '';
+    //     // eslint-disable-next-line
+    //   } else if (deliverState !== 1 && name === 'name') {
+    //     return JSON.parse(deliveryman).d_name;
+    //   } else if (deliverState !== 1 && name === 'phone') {
+    //     return JSON.parse(deliveryman).d_phone;
+    //   }
+    //   return '';
+    // },
   },
 };
 </script>

@@ -76,6 +76,7 @@ export default {
       totalMoney: 0,
       orderLoading: false,
       interval: null,
+      orderInterval: null,
       addrInfo: {},
     };
   },
@@ -86,6 +87,7 @@ export default {
   },
   mounted() {
     let waitTime = 30 * 60; // 默认请求30分钟,每隔5秒请求一次
+    this.setPayTimeInterval(5, 0);
     this.interval = setInterval(() => {
       waitTime -= 5;
       if (waitTime > 0) {
@@ -94,11 +96,13 @@ export default {
         waitTime = 30 * 60;
         this.leftPayTime = 0;
         clearInterval(this.interval);
+        clearInterval(this.orderInterval);
       }
     }, 5000);
   },
   destroyed() {
     clearInterval(this.interval);
+    clearInterval(this.orderInterval);
   },
   methods: {
     /**
@@ -123,11 +127,12 @@ export default {
           this.addrInfo = JSON.parse(info.o_delivery_addr);
           if (info.delivery_state === 1 && info.o_pay_state === 1) {
             clearInterval(this.interval);
+            clearInterval(this.orderInterval);
           }
-          if (!this.orderHasPay) {
-            // 如果仍在订单支付页面
-            this.setPayTimeInterval(5, 0);
-          }
+          // if (!this.orderHasPay) {
+          //   // 如果仍在订单支付页面
+          //   this.setPayTimeInterval(5, 0);
+          // }
         }
         this.orderLoading = false;
       } catch (e) {
@@ -200,7 +205,7 @@ export default {
      */
     setPayTimeInterval(minute, second) {
       let waitTime = minute * 60 + second;
-      const orderInterval = setInterval(() => {
+      this.orderInterval = setInterval(() => {
         waitTime -= 1;
         if (waitTime > 0) {
           const waitMinute = parseInt(waitTime / 60, 10);
@@ -210,7 +215,7 @@ export default {
           waitTime = minute * 60 + second;
           this.leftPayTime = 0;
           // todo:超时应向服务器发起请求，取消订单
-          clearInterval(orderInterval);
+          clearInterval(this.orderInterval);
         }
       }, 1000);
     },

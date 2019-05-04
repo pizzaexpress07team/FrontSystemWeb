@@ -204,7 +204,6 @@ export default {
         userAddr[this.editIndex] = editAddr;
       } else {
         // 如果为新增，则在数组最前添加1
-        console.log(this.userAddressList,this.userAddressList === null);
         if (this.userAddressList === null) {
           this.userAddressList = [];
         }

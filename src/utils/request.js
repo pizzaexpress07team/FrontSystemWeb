@@ -34,7 +34,7 @@ axios.interceptors.response.use((data) => {
   return Promise.resolve(err);
 });
 
-const base = 'http://3.86.76.105:8080';
+const base = 'http://54.152.9.39:8080';
 
 export const postRequest = (url, params) => axios({
   method: 'POST',
